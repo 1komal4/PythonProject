@@ -1,5 +1,9 @@
 import pandas as pd
 import re
+import smtplib as smt
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 # Regular expression for validating the mail
 regex = re.compile(
     r"([-!#-'*+/-9=?A-Z^-~]+(\.[-!#-'*+/-9=?A-Z^-~]+)*|\"([]!#-[^-~ \t]|(\\[\t -~]))+\")@([-!#-'*+/-9=?A-Z^-~]+(\.[-!#-'*+/-9=?A-Z^-~]+)*|\[[\t -Z^-~]*])")
@@ -10,6 +14,30 @@ regex = re.compile(
 def isValid(email):
     if re.fullmatch(regex, email):
         return email
+
+    
+    
+def readMails():
+    # Reading mails from excel file
+    # print("Reading mails from Excel")
+    data = pd.read_excel("info.xlsx")
+    emailData = data.get("Email")
+    emailList = list(emailData)
+
+    # emailList contains all the mails read from the excel file
+    # Now, we will check each mail using isValid function
+    validEmail = map(isValid, emailList)
+    validEmailListUnFiltered = list(validEmail)
+
+    # validEmailListUnFiltered returns the valid mails as well as invalid mails as none in a list
+    # To filter all the valid mails we will use filter() function
+
+    validEmailListFiltered = filter(
+        lambda emailValue: emailValue != None, validEmailListUnFiltered
+    )
+    listOfFinalEmails = list(validEmailListFiltered)
+    return listOfFinalEmails
+
 
     
     def sendEmail():
